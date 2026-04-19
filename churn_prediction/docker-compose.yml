@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+
+  # ── Churn Prediction API ──────────────────────────────────────
+  churn-api:
+    build:
+      context: .
+      target: production
+    container_name: churn-prediction-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_VERSION=bert-churn-v1.2
+      - ACCURACY_THRESHOLD=0.85
+      - LOG_LEVEL=INFO
+      - WORKERS=4
+    volumes:
+      - ./models:/app/models:ro
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - churn-network
+
+  # ── Monitoring Dashboard ──────────────────────────────────────
+  dashboard:
+    image: grafana/grafana:latest
+    container_name: churn-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - churn-api
+    networks:
+      - churn-network
+
+  # ── Prometheus Metrics ────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: churn-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - churn-network
+
+networks:
+  churn-network:
+    driver: bridge
+
+volumes:
+  grafana_data:

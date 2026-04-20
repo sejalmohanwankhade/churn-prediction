@@ -255,7 +255,7 @@ tests/test_churn_api.py::TestModelAccuracy::test_precision_above_threshold PASSE
 **Sejal Wankhade**  
 Data Science & Analytics  
 📧 sejalmohanwankhade@gmail.com  
-🔗 [LinkedIn](https://www.linkedin.com/in/sejal-wankhade-3539b7272/) | [GitHub]((https://github.com/sejalmohanwankhade))
+🔗 [LinkedIn](https://www.linkedin.com/in/sejal-wankhade-3539b7272/) | [GitHub](https://github.com/sejalmohanwankhade)
 
 ---
 
